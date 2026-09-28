@@ -49,7 +49,9 @@ api.interceptors.response.use(
 
         // Refresh token is expired/invalid
         setToken(null);
-
+   if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }

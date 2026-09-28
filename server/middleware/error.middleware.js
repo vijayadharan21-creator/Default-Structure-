@@ -26,9 +26,23 @@ const errorMiddleware = (err,req,res,next) => {
             message: "Invalid ID"
         });
     }
+ if (err.name === "TokenExpiredError") {
+        res.clearCookie("refreshtoken", { httpOnly: true });
+        return res.status(401).json({
+            success: false,
+            message: "Session expired. Please log in again."
+        });
+    }
+ 
+    if (err.name === "JsonWebTokenError") {
+        res.clearCookie("refreshtoken", { httpOnly: true });
+        return res.status(401).json({
+            success: false,
+            message: "Invalid token. Please log in again."
+        });
+    }
 
-
-    // Custom appError
+   
     return res.status(err.statusCode || 500).json({
 
         success: false,
