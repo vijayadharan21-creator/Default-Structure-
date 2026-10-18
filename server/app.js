@@ -10,16 +10,19 @@ import cookieParser from 'cookie-parser'
 //variable assign
 const app=express();
 app.use(express.json())
-app.use(cors({credentials:true,origin:"http://localhost:5173"}));
+app.use(cors({credentials:true,origin:"http://localhost"}));
 app.use(cookieParser());
 //routers
 app.use("/api",loginRouter);
 app.use("/api/auth",tokenRouter);
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok" });
+});
 app.use(errorMiddleware);
 const startServer=()=>{
     try{
 
-        app.listen(PORT,async()=>{
+        app.listen(PORT,"0.0.0.0",async()=>{
             await connectDB();
             console.log("Server listening at port 5000");
         })
@@ -32,4 +35,8 @@ const startServer=()=>{
 
 
 //starting server
-startServer();
+if (process.env.NODE_ENV !== 'test') {
+    startServer();
+}
+
+export {app}
