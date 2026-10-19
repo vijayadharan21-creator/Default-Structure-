@@ -10,7 +10,7 @@ import cookieParser from 'cookie-parser'
 //variable assign
 const app=express();
 app.use(express.json())
-app.use(cors({credentials:true,origin:"http://localhost"}));
+
 app.use(cookieParser());
 //routers
 app.use("/api",loginRouter);
@@ -39,4 +39,4 @@ if (process.env.NODE_ENV !== 'test') {
     startServer();
 }
 
-export {app}
+export {app}

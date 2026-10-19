@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getToken, setToken } from './token.js';
 
 export const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "/api",
   withCredentials: true
 });
 
