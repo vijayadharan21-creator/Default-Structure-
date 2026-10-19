@@ -1,0 +1,22 @@
+on :
+  push :
+    branches : [main]
+jobs :
+  deploy :
+    runs-on : ubuntu-latest
+    steps:
+      - name : "deploy"
+        uses : applyboy/ssh-action@v1
+        with:
+          host : "${{secrets.EC2_HOST}}"
+          username : "${{secrets.EC2_USERNAME}}"
+          key : "${{secrets.EC2_KEY}}"
+          script : |
+            cd /home/ubuntu/Default-Structure
+            git pull origin main
+            docker compose down
+            docker compose up -d --build
+            sleep 10
+            curl -fsS -m 10 http://localhost/api/health
+            docker image prune -f
+       
