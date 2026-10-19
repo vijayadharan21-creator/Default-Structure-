@@ -7,16 +7,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run : echo "Working"
-      - uses : actions/checkout@v4
-      - uses : actions/setup-node@v4
+      - name: "Get direcyory"
+        uses : actions/checkout@v4
+
+      - name : "Set Node"
+        uses : actions/setup-node@v4
         with :
           node-version : "24"
           cache : npm
           cache-dependency-path: server/package-lock.json
-      - run : npm ci 
+      
+      
+      - name : "Install packages"
+        run : npm ci 
         working-directory: client
-      - run : npm run build
+
+      - name : "Npm lint"
+        run : npm run lint --if-present
+        working-directory : client
+        
+      - name : "Build"
+        run : npm run build
         working-directory: client
+
   backend:
     runs-on: ubuntu-latest
     steps:
