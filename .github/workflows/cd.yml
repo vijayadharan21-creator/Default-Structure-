@@ -12,7 +12,7 @@ jobs :
           username : "${{secrets.EC2_USERNAME}}"
           key : "${{secrets.EC2_KEY}}"
           script : |
-            cd /home/ubuntu/Default-Structure
+            cd /home/ubuntu/Default-Structure-
             git pull origin main
             docker compose down
             docker compose up -d --build
