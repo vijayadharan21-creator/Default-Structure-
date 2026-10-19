@@ -6,7 +6,7 @@ jobs :
     runs-on : ubuntu-latest
     steps:
       - name : "deploy"
-        uses : applyboy/ssh-action@v1
+        uses : appleboy/ssh-action@v1
         with:
           host : "${{secrets.EC2_HOST}}"
           username : "${{secrets.EC2_USERNAME}}"
