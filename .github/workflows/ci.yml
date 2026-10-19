@@ -3,7 +3,20 @@ on:
   push:
     branches: [main]
 jobs:
-  hello:
+  frontend:
     runs-on: ubuntu-latest
     steps:
       - run : echo "Working"
+      - uses : actions/checkout@v4
+      - uses : action/setup-node@v4
+        with :
+          node-version : "24"
+          cache : npm
+          cache-dependency-path: server/package-lock.json
+      - run : npm ci 
+        working-directory: client
+      - run : npm run build
+        working-directory: client
+
+          
+        
