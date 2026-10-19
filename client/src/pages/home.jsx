@@ -17,7 +17,7 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Welcome Back!</h1>
+        <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Welcome Back Hemasree</h1>
         <p className="text-slate-400 text-sm mb-6">
           You have successfully authenticated into the store.
         </p>
