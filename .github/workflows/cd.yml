@@ -1,22 +1,51 @@
-on :
-  push :
-    branches : [main]
-jobs :
-  deploy :
-    runs-on : ubuntu-latest
+name: CD
+
+on:
+  workflow_dispatch:            # a manual "Run workflow" button
+  workflow_run:
+    workflows: ["CI"]           # must match the name: line of your CI file
+    types: [completed]
+    branches: [main]
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # only deploy if CI succeeded (or you started it manually)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
-      - name : "deploy"
-        uses : appleboy/ssh-action@v1
+      - name: Deploy
+        uses: appleboy/ssh-action@v1
         with:
-          host : "${{secrets.EC2_HOST}}"
-          username : "${{secrets.EC2_USERNAME}}"
-          key : "${{secrets.EC2_KEY}}"
-          script : |
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          script_stop: true
+          script: |
+            set -e
             cd /home/ubuntu/Default-Structure-
-            git pull origin main
-            docker compose down
+
+            git fetch origin main
+            git reset --hard origin/main
+            echo "Deployed commit: $(git rev-parse --short HEAD)"
+
             docker compose up -d --build
-            sleep 10
-            curl -fsS -m 10 http://localhost/api/health
-            docker image prune -f
-       
+
+            echo "Waiting for the app..."
+            for i in $(seq 1 12); do
+              if curl -fsS -m 5 http://localhost/api/health; then
+                echo
+                echo "Healthy."
+                docker image prune -f
+                exit 0
+              fi
+              sleep 5
+            done
+
+            echo "Health check failed. Last backend logs:"
+            docker compose logs --tail 50 backend
+            exit 1
