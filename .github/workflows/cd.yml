@@ -27,7 +27,14 @@ jobs:
           script_stop: true
           script: |
             set -e
-            cd /home/ubuntu/Default-Structure-
+            if [ -d "/home/ubuntu/Default-Structure-" ]; then
+              cd /home/ubuntu/Default-Structure-
+            elif [ -d "/home/ubuntu/Default-Structure" ]; then
+              cd /home/ubuntu/Default-Structure
+            else
+              echo "Error: Directory not found in /home/ubuntu"
+              exit 1
+            fi
 
             git fetch origin main
             git reset --hard origin/main
@@ -35,14 +42,15 @@ jobs:
 
             sudo docker compose up -d --build
 
-            echo "Waiting for the app..."
+            echo "Waiting for the backend..."
             for i in $(seq 1 12); do
-              if curl -fsS -m 5 http://localhost/api/health; then
+              if curl -fsS -m 5 http://localhost:5000/api/health; then
                 echo
                 echo "Healthy."
                 sudo docker image prune -f
                 exit 0
               fi
+              echo "Retrying ($i/12)..."
               sleep 5
             done
 
