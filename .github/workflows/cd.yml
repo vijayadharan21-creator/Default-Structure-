@@ -33,19 +33,19 @@ jobs:
             git reset --hard origin/main
             echo "Deployed commit: $(git rev-parse --short HEAD)"
 
-            docker compose up -d --build
+            sudo docker compose up -d --build
 
             echo "Waiting for the app..."
             for i in $(seq 1 12); do
               if curl -fsS -m 5 http://localhost/api/health; then
                 echo
                 echo "Healthy."
-                docker image prune -f
+                sudo docker image prune -f
                 exit 0
               fi
               sleep 5
             done
 
             echo "Health check failed. Last backend logs:"
-            docker compose logs --tail 50 backend
+            sudo docker compose logs --tail 50 backend
             exit 1
